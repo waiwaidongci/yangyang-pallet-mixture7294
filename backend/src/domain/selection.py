@@ -32,22 +32,25 @@ def _initializations(values: list[float], distinct: list[float], size: int):
     return tuple(dict.fromkeys(starts))
 
 
-def select_model(values: list[float], max_components: int) -> tuple[Candidate, list[Candidate]]:
+def fit_candidate(values: list[float], size: int) -> Candidate:
+    """Run every deterministic start for one component count and keep the best."""
     values = sorted(values)
     distinct = sorted(set(values))
-    candidates = []
-    for size in range(1, max_components + 1):
-        parameters = 3 * size - 1
-        starts = _initializations(values, distinct, size) if size <= len(distinct) else ()
-        fitted = []
-        for means in starts:
-            try:
-                fitted.append(fit_em(values, means))
-            except EmptyComponent:
-                continue
-        converged = [fit for fit in fitted if fit.converged]
-        best = max(converged or fitted, key=lambda fit: fit.log_likelihood, default=None)
-        bic = parameters * log(len(values)) - 2 * best.log_likelihood if converged else None
-        candidates.append(Candidate(size, parameters, len(starts), len(converged), best, bic))
+    parameters = 3 * size - 1
+    starts = _initializations(values, distinct, size) if size <= len(distinct) else ()
+    fitted = []
+    for means in starts:
+        try:
+            fitted.append(fit_em(values, means))
+        except EmptyComponent:
+            continue
+    converged = [fit for fit in fitted if fit.converged]
+    best = max(converged or fitted, key=lambda fit: fit.log_likelihood, default=None)
+    bic = parameters * log(len(values)) - 2 * best.log_likelihood if converged else None
+    return Candidate(size, parameters, len(starts), len(converged), best, bic)
+
+
+def select_model(values: list[float], max_components: int) -> tuple[Candidate, list[Candidate]]:
+    candidates = [fit_candidate(values, size) for size in range(1, max_components + 1)]
     selected = min((item for item in candidates if item.bic is not None), key=lambda item: (item.bic, item.size))
     return selected, candidates

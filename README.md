@@ -52,8 +52,10 @@ Compose 项目名为 `yangyang-pallet-mixture`。OpenAPI 位于 `http://127.0.0.
 | 表键 | 内容 |
 |---|---|
 | `sorting_queue` | 待分拣板件、首选与次选成分、操作与复测原因 |
-| `bic_candidates` | 候选成分数、起点收敛情况、训练对数似然和 BIC |
-| `model_components` | 成分权重、均值、方差、训练批次及复测阈值 |
+| `cv_candidates` | 整批轮流留出交叉验证候选汇总：最差一批平均对数密度与候选状态 |
+| `cv_fold_scoring` | 逐折（候选成分数 × 留出训练批）评分、失败与未派发标记 |
+| `bic_candidates` | 候选成分数、起点收敛情况、训练对数似然和 BIC（诊断参考） |
+| `model_components` | 全量训练批重拟的冻结成分权重、均值、方差、训练批次及复测阈值 |
 | `holdout_scoring` | 独立批逐板评分，供复核对账 |
 | `location_diagnostics` | 按分区和库位聚合的批数、平均对数密度和复测比例 |
 

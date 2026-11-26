@@ -9,6 +9,7 @@ from src.domain.project import analyze
 from src.models.dataset import Dataset
 from src.models.run import Run
 from src.services.audit import record
+from src.services.cv_store import DatabaseFoldStore
 
 
 def recover_jobs():
@@ -33,7 +34,7 @@ def execute(job):
     result = None
     error_message = None
     try:
-        result = analyze(rows, settings)
+        result = analyze(rows, settings, fold_store=DatabaseFoldStore())
         json.dumps(result, ensure_ascii=False, allow_nan=False)
     except ValueError as error:
         result = None

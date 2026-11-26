@@ -16,6 +16,9 @@ from src.routes import auth, datasets, runs, system
 @asynccontextmanager
 async def lifespan(_):
     bootstrap()
+    from migrations.m0002_cv_fold_scores import upgrade as upgrade_cv_fold
+
+    upgrade_cv_fold()
     if SEED_DEMO:
         try:
             seed()
